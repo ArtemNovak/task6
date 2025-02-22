@@ -1,0 +1,40 @@
+trigger:
+- main
+
+pool:
+  vmImage: agent-runner-an
+
+variables:
+  GOVERSION: '1.24'
+  GOPATH: '$(Pipeline.Workspace)/go'
+  GOBIN:  '$(GOPATH)/bin'
+  modulePath: '$(System.DefaultWorkingDirectory)'
+
+steps:
+- task: GoTool@0
+  inputs:
+    version: '$(GOVERSION)'
+  displayName: 'Install Go'
+
+- task: Cache@2
+  inputs:
+    key: 'go | "$(Agent.OS)" | go.sum'
+    restoreKeys: 'go | "$(Agent.OS)"'
+    path: '$(GOPATH)/pkg/mod'
+  displayName: 'Cache Go modules'
+
+- script: go mod download
+  workingDirectory: '$(modulePath)'
+  displayName: 'Download dependencies'
+
+- script: go test -v ./...
+  workingDirectory: '$(modulePath)'
+  displayName: 'Run tests'
+
+- script: go build -v .
+  workingDirectory: '$(modulePath)'
+  displayName: 'Build application'
+
+- script: go vet ./...
+  workingDirectory: '$(modulePath)'
+  displayName: 'Run go vet'
