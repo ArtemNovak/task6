@@ -15,9 +15,12 @@ steps:
     version: '$(GOVERSION)'
   displayName: 'Install Go'
 
-- script: go mod download
+- script: |
+    go version
+    go mod init mysampleapp
+    go mod tidy
   workingDirectory: '$(modulePath)'
-  displayName: 'Download dependencies'
+  displayName: 'Initialize Go module'
 
 - script: go test -v ./...
   workingDirectory: '$(modulePath)'
