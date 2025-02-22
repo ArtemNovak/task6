@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: agent-runner-an
+  name: Default 
 
 variables:
   GOVERSION: '1.24'
