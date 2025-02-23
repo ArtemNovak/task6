@@ -36,6 +36,7 @@ stages:
   - deployment: Deploy
     pool:
       name: Default
+    environment: "test"
     strategy:
       runOnce:
         deploy:
