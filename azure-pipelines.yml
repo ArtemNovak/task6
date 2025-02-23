@@ -10,11 +10,13 @@ variables:
     azureSubscription: 'VMConnection'
     webAppName: 'simpleapp-an'
 
+pool:
+  name: Default
+
 stages:
-- stage: Test
-  displayName: 'Test and Verify'
+- stage: Build
   jobs:
-  - job: TestJob
+  - job: BuildTestAndDeploy
     steps:
     - task: GoTool@0
       inputs:
@@ -25,12 +27,6 @@ stages:
       workingDirectory: '$(modulePath)'
       displayName: 'Initialize Go module'
 
-- stage: Build
-  pool:
-    name: Default
-  jobs:
-  - job: BuildAndPush
-    steps:
     - task: Docker@2
       displayName: Build and push Docker image
       inputs:
@@ -42,21 +38,9 @@ stages:
           $(tag)
           latest
 
-- stage: Deploy
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: Deploy
-    pool:
-      name: Default
-    environment: "test"
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzureWebAppContainer@1
-            displayName: 'Deploy to Azure Web App'
-            inputs:
-              azureSubscription: $(azureSubscription)
-              appName: $(webAppName)
-              containers: $(containerRegistry)/$(imageRepository):$(tag)
+    - task: AzureWebAppContainer@1
+      displayName: 'Deploy to Azure Web App'
+      inputs:
+        azureSubscription: $(azureSubscription)
+        appName: $(webAppName)
+        containers: $(containerRegistry)/$(imageRepository):$(tag)
