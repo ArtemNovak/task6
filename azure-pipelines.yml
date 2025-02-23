@@ -9,6 +9,9 @@ variables:
     tag: '$(Build.BuildId)'
     azureSubscription: 'VMConnection'
     webAppName: 'simpleapp-an'
+    GOVERSION: '1.23.5'
+    modulePath: '$(Build.SourcesDirectory)'
+    GOPATH: '$(Build.SourcesDirectory)/go'
 
 pool:
   name: Default
