@@ -1,7 +1,6 @@
 trigger:
 - main
 
-
 variables:
     dockerRegistryServiceConnection: 'CapDefault'
     imageRepository: 'simplewebapp'
@@ -12,6 +11,20 @@ variables:
     webAppName: 'simpleapp-an'
 
 stages:
+- stage: Test
+  displayName: 'Test and Verify'
+  jobs:
+  - job: TestJob
+    steps:
+    - task: GoTool@0
+      inputs:
+        version: '$(GOVERSION)'
+      displayName: 'Install Go'
+
+    - script: go version
+      workingDirectory: '$(modulePath)'
+      displayName: 'Initialize Go module'
+
 - stage: Build
   pool:
     name: Default
